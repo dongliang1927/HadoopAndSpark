@@ -15,7 +15,7 @@
         数据分析模块
 
         population模块：
-            人口模块，具体需求、文档见:https://fs.dm.bionta.com/svn/sadan/3.0
+            人口模块，具体需求见文档
             workflow.xml
                 oozie workflow 配置
             runR.sh
