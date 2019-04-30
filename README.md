@@ -1,0 +1,3 @@
+# HadoopAndSpark
+some scripts for hadoop components likes sqoop, oozie, hdfs, hive, hbase, kafka, zookeeper etc. and spark
+updating...
