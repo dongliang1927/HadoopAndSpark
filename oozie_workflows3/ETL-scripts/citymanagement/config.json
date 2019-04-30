@@ -1,0 +1,12 @@
+{
+  "impalaurl":"nn0.dm.bionta.com",
+  "hiveuser":"dongliang",
+  "hivepassword":"",
+  "hiveurlin":"jdbc:hive2://nn0.dm.bionta.com:10000/sadan3",
+  "hiveurlout":"jdbc:hive2://nn0.dm.bionta.com:10000/sadan3",
+  "hivedriver":"/opt/cloudera/parcels/CDH/lib/hive/lib",
+  
+  "intableBaseorg":"base_org",
+  "intableCityDisputeReport":"xxx",
+  "outtableCityDisputeReport":"citymanagement_xxx"
+}

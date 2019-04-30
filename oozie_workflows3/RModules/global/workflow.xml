@@ -1,0 +1,117 @@
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<workflow-app xmlns="uri:oozie:workflow:0.4" name="sadan-global-sh-WF">
+
+    <parameters>
+        <property>
+            <name>jobTracker</name>
+            <value>${jobTracker}</value>
+        </property>
+        <property>
+            <name>nameNode</name>
+            <value>${nameNode}</value>
+        </property>
+    </parameters>
+
+    <start to="actionBaselevelset"/>
+
+    <action name="actionBaselevelset">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>runR.sh</exec>
+            <argument>./RModules/global/base_levelset/levelset.R</argument>
+            <argument>./RModules/global/base_levelset/</argument>
+            <env-var>HADOOP_USER_NAME=${wf:user()}</env-var>
+            <file>runR.sh#runR.sh</file>
+            <archive>global.tar.gz#RModules</archive>
+        </shell>
+        <ok to="forkActions"/>
+        <error to="failed"/>
+    </action>
+
+    <fork name="forkActions">
+        <path start="actionBoundary"/>
+        <path start="actionPolygons_gen"/>
+        <path start="actionPolygons_town"/>
+        <path start="actionPolygons_city"/>
+    </fork>
+
+    <action name="actionBoundary">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>runR.sh</exec>
+            <argument>./RModules/global/base_boundary/base_boundary.R</argument>
+            <argument>./RModules/global/base_boundary/</argument>
+            <env-var>HADOOP_USER_NAME=${wf:user()}</env-var>
+            <file>runR.sh#runR.sh</file>
+            <archive>global.tar.gz#RModules</archive>
+        </shell>
+        <ok to="joinActions"/>
+        <error to="failed"/>
+    </action>
+    <action name="actionPolygons_gen">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>runR.sh</exec>
+            <argument>./RModules/global/base_polygons_gen/polygons_gen.R</argument>
+            <argument>./RModules/global/base_polygons_gen/</argument>
+            <env-var>HADOOP_USER_NAME=${wf:user()}</env-var>
+            <file>runR.sh#runR.sh</file>
+            <archive>global.tar.gz#RModules</archive>
+        </shell>
+        <ok to="joinActions"/>
+        <error to="failed"/>
+    </action>
+    <action name="actionPolygons_town">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>runR.sh</exec>
+            <argument>./RModules/global/base_polygons_town/polygons_gen.R</argument>
+            <argument>./RModules/global/base_polygons_town/</argument>
+            <env-var>HADOOP_USER_NAME=${wf:user()}</env-var>
+            <file>runR.sh#runR.sh</file>
+            <archive>global.tar.gz#RModules</archive>
+        </shell>
+        <ok to="joinActions"/>
+        <error to="failed"/>
+    </action>
+    <action name="actionPolygons_city">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>runR.sh</exec>
+            <argument>./RModules/global/base_polygons_city/polygons_gen.R</argument>
+            <argument>./RModules/global/base_polygons_city/</argument>
+            <env-var>HADOOP_USER_NAME=${wf:user()}</env-var>
+            <file>runR.sh#runR.sh</file>
+            <archive>global.tar.gz#RModules</archive>
+        </shell>
+        <ok to="joinActions"/>
+        <error to="failed"/>
+    </action>
+
+    <join name="joinActions" to="success"/>
+    <kill name="failed">
+        <message>Sadan import etl run error: [${wf:errorMessage(wf:lastErrorNode())}]</message>
+    </kill>
+    <end name="success"/>
+</workflow-app>

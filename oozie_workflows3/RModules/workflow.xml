@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workflow-app xmlns="uri:oozie:workflow:0.5" name="lanzou_analyse_Workflow">
+    <global>
+        <job-tracker>${jobTracker}</job-tracker>
+        <name-node>${nameNode}</name-node>
+        <configuration>
+            <property>
+                <name>mapred.job.queue.name</name>
+                <value>lanzhou-hotline</value>
+            </property>
+            <property>
+                <name>hbase.zookeeper.quorum</name>
+                <value>${zookeeper_quorum}</value>
+            </property>
+        </configuration>
+    </global>
+
+    <start to="global_topic"/>
+
+    <action name="global_topic">
+        <sub-workflow>
+            <app-path>${wf:appPath()}/global</app-path>
+            <propagate-configuration/>
+        </sub-workflow>
+        <ok to="all_other_topics"/>
+        <error to="Error"/>
+    </action>
+
+    <fork name="all_other_topics">
+        <path start="grid_management"/>
+        <path start="city_management"/>
+        <path start="population"/>
+        <path start="police"/>
+    </fork>
+
+    <action name="grid_management">
+        <sub-workflow>
+            <app-path>${wf:appPath()}/grid_management</app-path>
+            <propagate-configuration/>
+        </sub-workflow>
+        <ok to="topic_finished" />
+        <error to="Error"/>
+    </action>
+
+    <action name="city_management">
+        <sub-workflow>
+            <app-path>${wf:appPath()}/city_management</app-path>
+            <propagate-configuration/>
+        </sub-workflow>
+        <ok to="topic_finished" />
+        <error to="Error"/>
+    </action>
+
+    <action name="population">
+        <sub-workflow>
+            <app-path>${wf:appPath()}/population</app-path>
+            <propagate-configuration/>
+        </sub-workflow>
+        <ok to="topic_finished" />
+        <error to="Error"/>
+    </action>
+    <action name="police">
+        <sub-workflow>
+            <app-path>${wf:appPath()}/police</app-path>
+            <propagate-configuration/>
+        </sub-workflow>
+        <ok to="topic_finished" />
+        <error to="Error"/>
+    </action>
+
+    <kill name="Error">
+        <message>R Module run error: [${wf:errorMessage(wf:lastErrorNode())}]</message>
+    </kill>
+
+    <join name="topic_finished" to="done"/>
+    <end name="done" />
+
+</workflow-app>

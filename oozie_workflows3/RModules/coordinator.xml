@@ -1,0 +1,25 @@
+<coordinator-app
+        name="sandan_3.0_RModules_Coordinator"
+        start="${start}"
+        end="${end}"
+        frequency="${coord:days(30)}"
+        timezone="UTC"
+        xmlns="uri:oozie:coordinator:0.4">
+
+    <action>
+        <workflow>
+            <app-path>${appBaseDir}/</app-path>
+
+            <configuration>
+                <property>
+                    <name>jobTracker</name>
+                    <value>${jobTracker}</value>
+                </property>
+                <property>
+                    <name>nameNode</name>
+                    <value>${nameNode}</value>
+                </property>
+            </configuration>
+        </workflow>
+    </action>
+</coordinator-app>

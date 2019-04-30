@@ -1,0 +1,39 @@
+<coordinator-app
+        name="lanzhou_ETL_Coordinator"
+        start="${start}"
+        end="${end}"
+        frequency="${coord:days(1)}"
+        timezone="UTC"
+        xmlns="uri:oozie:coordinator:0.4">
+
+    <action>
+        <workflow>
+            <app-path>${appBaseDir}</app-path>
+            <configuration> 
+	      
+	        <property>
+                    <name>12345path</name>
+		    <value>${appBaseDir}/12345/</value>
+                </property>
+		<property>
+                    <name>citymanagementpath</name>
+		    <value>${appBaseDir}/citymanagement/</value>
+                </property>
+		<property>
+                    <name>gridmanagementpath</name>
+		    <value>${appBaseDir}/gridmanagement/</value>
+                </property>
+		
+		
+                <property>
+                    <name>jobTracker</name>
+                    <value>${jobTracker}</value>
+                </property>
+                <property>
+                    <name>nameNode</name>
+                    <value>${nameNode}</value>
+                </property>
+            </configuration>
+        </workflow>
+    </action>
+</coordinator-app>

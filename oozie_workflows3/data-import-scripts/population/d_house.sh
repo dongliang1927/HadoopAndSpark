@@ -1,0 +1,55 @@
+#!/bin/bash
+server_addr=$1
+db_username=$2
+db_password=$3
+
+#server_addr="jdbc:oracle:thin:@//db.dm.bionta.com:1521/social"
+#db_username="dongliang"
+#db_password="123456"
+
+db_table_name="d_house"
+
+hbase_namespace="sadan3"
+hbase_table_name="d_house"
+column_family="basic"
+
+# echo "create_namespace 'sadan3';quit;" | hbase shell
+
+#query_str="SELECT \'兰州市\' as `REGION`, `ID`,BUILDINGID,UNIT,`FLOOR`,HOUSENUM,BASEHOUSETYPEID,BASEHOUSETYPENAME,BASESTRUCTUREID,BASESTRUCTURENAME,`TYPEID`,TYPENAME,NATUREID,NATURENAME,HOUSETYPEID,HOUSETYPENAME,HOUSEOWNERSHIP,HOSTNAME,USEID,USENAME,LINKTEL,AREA,CREATEUSER,CREATETIME,UPDATEUSER,UPDATETIME,`VERSION`,REMARK,ROOMPEOPLE,DF1,DF2,DF3,DF4,DF5,DF6,DF7,DF8,DF9,DF10,HUKOUSTATUS,ATTRIBUTESTR,ORGID,ORGNAME,ORGPATH,BUILDINGNAME,HOSTID,COLLECTUSER,COLLECTTIME,COLLECTCODE,HOUSEAREATYPEID,HOUSEAREATYPENAME,HOUSEQUALITYID,HOUSEQUALITYNAME,HOUSERPOSITION,PRACTICALAREA,HOUSINGPRODUCTIONID,HOUSINGPRODUCTIONNAME FROM ${db_table_name} where \$CONDITIONS";
+#sqoop import -D sqoop.hbase.add.row.key=true --connect ${server_addr} --username ${db_username} --password ${db_password} --query ${query_str} -m 1  --hbase-table ${hbase_namespace}:${hbase_table_name} --column-family ${column_family} --hbase-create-table --hbase-row-key REGION,ID
+sqoop import \
+-D sqoop.hbase.add.row.key=true \
+--connect ${server_addr} \
+--username ${db_username} \
+--password ${db_password} \
+--query "SELECT '兰州市' as REGION, ID,BUILDINGID,UNIT,FLOOR,HOUSENUM,BASEHOUSETYPEID,BASEHOUSETYPENAME,BASESTRUCTUREID,BASESTRUCTURENAME,TYPEID,TYPENAME,NATUREID,NATURENAME,HOUSETYPEID,HOUSETYPENAME,HOUSEOWNERSHIP,HOSTNAME,USEID,USENAME,LINKTEL,AREA,CREATEUSER,CREATETIME,UPDATEUSER,UPDATETIME,VERSION,REMARK,ROOMPEOPLE,DF1,DF2,DF3,DF4,DF5,DF6,DF7,DF8,DF9,DF10,HUKOUSTATUS,ATTRIBUTESTR,ORGID,ORGNAME,ORGPATH,BUILDINGNAME,HOSTID,COLLECTUSER,COLLECTTIME,COLLECTCODE,HOUSEAREATYPEID,HOUSEAREATYPENAME,HOUSEQUALITYID,HOUSEQUALITYNAME,HOUSERPOSITION,PRACTICALAREA,HOUSINGPRODUCTIONID,HOUSINGPRODUCTIONNAME FROM ${db_table_name} where \$CONDITIONS" \
+-m 1  \
+--hbase-table ${hbase_namespace}:${hbase_table_name} \
+--column-family ${column_family} \
+--hbase-create-table \
+--hbase-row-key REGION,ID
+
+#创建hive外部表
+hive -e "CREATE DATABASE IF NOT EXISTS ${hbase_namespace};
+ DROP TABLE IF EXISTS ${hbase_namespace}.${hbase_table_name};
+  CREATE EXTERNAL TABLE ${hbase_namespace}.${hbase_table_name}
+  (HBASE_ROWKEY STRING,ID BIGINT,BUILDINGID BIGINT,UNIT STRING,FLOOR BIGINT,HOUSENUM STRING,BASEHOUSETYPEID BIGINT,BASEHOUSETYPENAME STRING,
+  BASESTRUCTUREID BIGINT,BASESTRUCTURENAME STRING,TYPEID BIGINT,TYPENAME STRING,NATUREID BIGINT,NATURENAME STRING,HOUSETYPEID BIGINT,HOUSETYPENAME STRING,
+  HOUSEOWNERSHIP STRING,HOSTNAME STRING,USEID BIGINT,USENAME STRING,LINKTEL STRING,AREA BIGINT,CREATEUSER STRING,CREATETIME STRING,UPDATEUSER STRING,
+  UPDATETIME STRING,VERSION BIGINT,REMARK STRING,ROOMPEOPLE BIGINT,DF1 STRING,DF2 STRING,DF3 STRING,DF4 STRING,DF5 STRING,DF6 STRING,DF7 STRING,DF8 STRING,
+  DF9 STRING,DF10 STRING,HUKOUSTATUS STRING,ATTRIBUTESTR STRING,ORGID BIGINT,ORGNAME STRING,ORGPATH STRING,BUILDINGNAME STRING,HOSTID STRING,COLLECTUSER STRING,
+  COLLECTTIME STRING,COLLECTCODE STRING,HOUSEAREATYPEID BIGINT,HOUSEAREATYPENAME STRING,HOUSEQUALITYID BIGINT,HOUSEQUALITYNAME STRING,HOUSERPOSITION STRING,
+  PRACTICALAREA STRING,HOUSINGPRODUCTIONID BIGINT,HOUSINGPRODUCTIONNAME STRING) 
+  STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler' 
+  WITH SERDEPROPERTIES(\"hbase.columns.mapping\"=\":key, ${column_family}:ID,${column_family}:BUILDINGID,${column_family}:UNIT,${column_family}:FLOOR,
+  ${column_family}:HOUSENUM,${column_family}:BASEHOUSETYPEID,${column_family}:BASEHOUSETYPENAME,${column_family}:BASESTRUCTUREID,${column_family}:BASESTRUCTURENAME,
+  ${column_family}:TYPEID,${column_family}:TYPENAME,${column_family}:NATUREID,${column_family}:NATURENAME,${column_family}:HOUSETYPEID,${column_family}:HOUSETYPENAME,
+  ${column_family}:HOUSEOWNERSHIP,${column_family}:HOSTNAME,${column_family}:USEID,${column_family}:USENAME,${column_family}:LINKTEL,${column_family}:AREA,
+  ${column_family}:CREATEUSER,${column_family}:CREATETIME,${column_family}:UPDATEUSER,${column_family}:UPDATETIME,${column_family}:VERSION,${column_family}:REMARK,
+  ${column_family}:ROOMPEOPLE,${column_family}:DF1,${column_family}:DF2,${column_family}:DF3,${column_family}:DF4,${column_family}:DF5,${column_family}:DF6,
+  ${column_family}:DF7,${column_family}:DF8,${column_family}:DF9,${column_family}:DF10,${column_family}:HUKOUSTATUS,${column_family}:ATTRIBUTESTR,${column_family}:ORGID,
+  ${column_family}:ORGNAME,${column_family}:ORGPATH,${column_family}:BUILDINGNAME,${column_family}:HOSTID,${column_family}:COLLECTUSER,${column_family}:COLLECTTIME,
+  ${column_family}:COLLECTCODE,${column_family}:HOUSEAREATYPEID,${column_family}:HOUSEAREATYPENAME,${column_family}:HOUSEQUALITYID,${column_family}:HOUSEQUALITYNAME,
+  ${column_family}:HOUSERPOSITION,${column_family}:PRACTICALAREA,${column_family}:HOUSINGPRODUCTIONID,${column_family}:HOUSINGPRODUCTIONNAME\") 
+TBLPROPERTIES(\"hbase.table.name\" = \"${hbase_namespace}:${hbase_table_name}\")"
+

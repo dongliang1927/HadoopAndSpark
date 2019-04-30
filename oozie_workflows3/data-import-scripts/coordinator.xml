@@ -1,0 +1,38 @@
+<coordinator-app
+        name="sandan_data_import_scripts_Coordinator"
+        start="${start}"
+        end="${end}"
+        frequency="${coord:days(1)}"
+        timezone="UTC"
+        xmlns="uri:oozie:coordinator:0.4">
+
+    <action>
+        <workflow>
+            <app-path>${appBaseDir}/data-import-scripts/</app-path>
+
+            <configuration>
+                <property>
+                    <name>server_addr</name>
+                    <value>${server_addr}</value>
+                </property>
+                <property>
+                    <name>db_username</name>
+                    <value>${db_username}</value>
+                </property>
+                <property>
+                    <name>db_password</name>
+                    <value>${db_password}</value>
+                </property>
+                
+                <property>
+                    <name>jobTracker</name>
+                    <value>${jobTracker}</value>
+                </property>
+                <property>
+                    <name>nameNode</name>
+                    <value>${nameNode}</value>
+                </property>
+            </configuration>
+        </workflow>
+    </action>
+</coordinator-app>

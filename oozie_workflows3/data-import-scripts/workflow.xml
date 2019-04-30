@@ -1,0 +1,305 @@
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<workflow-app xmlns="uri:oozie:workflow:0.4" name="sadan-import-sh-WF">
+
+    <parameters>
+        <property>
+            <name>jobTracker</name>
+            <value>${jobTracker}</value>
+        </property>
+        <property>
+            <name>nameNode</name>
+            <value>${nameNode}</value>
+        </property>
+        <property>
+            <name>server_addr</name>
+            <value>${server_addr}</value>
+        </property>
+        <property>
+            <name>db_username</name>
+            <value>${db_username}</value>
+        </property>
+        <property>
+            <name>db_password</name>
+            <value>${db_password}</value>
+        </property>
+    </parameters>
+
+    <start to="forkActions"/>
+
+    <fork name="forkActions">
+
+        <path start="actionPopulaton_chinacoordinate"/>
+        <path start="actionPopulaton_baseorg"/>
+        <path start="actionPopulaton_dbuilding"/>
+        <path start="actionPopulaton_dhouse"/>
+        <path start="actionPopulaton_rfamilyinfo"/>
+        <path start="actionPopulaton_rpeople"/>
+
+        <path start="actionGrid_bpmdelay"/>
+        <path start="actionGrid_bpmtaskopinion"/>
+        <!--<path start="actionGrid_bpmtaskopinion_his"/>-->
+        <path start="actionGrid_callevent"/>
+        <!--<path start="actionGrid_callevent_his"/>-->
+        <path start="actionGrid_dispute"/>
+        <!--<path start="actionGrid_dispute_his"/>-->
+        <path start="actionFound_sysorg"/>
+        <path start="actionFound_sysuser"/>
+        <path start="actionFound_sysuserorg"/>
+
+    </fork>
+    
+    <action name="actionPopulaton_chinacoordinate">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>base_chinacoordinate.sh</exec>
+            <argument>${server_addr}</argument>
+            <argument>${db_username}</argument>
+            <argument>${db_password}</argument>
+
+            <env-var>HADOOP_USER_NAME=${wf:user()}</env-var>
+            <file>${wf:appPath()}/population/base_chinacoordinate.sh#base_chinacoordinate.sh</file>
+        </shell>
+        <ok to="joinActions"/>
+        <error to="failed"/>
+    </action>
+    <action name="actionPopulaton_baseorg">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>base_org.sh</exec>
+            <argument>${server_addr}</argument>
+            <argument>${db_username}</argument>
+            <argument>${db_password}</argument>
+
+            <env-var>HADOOP_USER_NAME=${wf:user()}</env-var>
+            <file>${wf:appPath()}/population/base_org.sh#base_org.sh</file>
+        </shell>
+        <ok to="joinActions"/>
+        <error to="failed"/>
+    </action>
+    <action name="actionPopulaton_dbuilding">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>d_building.sh</exec>
+            <argument>${server_addr}</argument>
+            <argument>${db_username}</argument>
+            <argument>${db_password}</argument>
+
+            <env-var>HADOOP_USER_NAME=${wf:user()}</env-var>
+            <file>${wf:appPath()}/population/d_building.sh#d_building.sh</file>
+        </shell>
+        <ok to="joinActions"/>
+        <error to="failed"/>
+    </action>
+    <action name="actionPopulaton_dhouse">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>d_house.sh</exec>
+            <argument>${server_addr}</argument>
+            <argument>${db_username}</argument>
+            <argument>${db_password}</argument>
+
+            <env-var>HADOOP_USER_NAME=${wf:user()}</env-var>
+            <file>${wf:appPath()}/population/d_house.sh#d_house.sh</file>
+        </shell>
+        <ok to="joinActions"/>
+        <error to="failed"/>
+    </action>
+    <action name="actionPopulaton_rfamilyinfo">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>r_familyinfo.sh</exec>
+            <argument>${server_addr}</argument>
+            <argument>${db_username}</argument>
+            <argument>${db_password}</argument>
+            <env-var>HADOOP_USER_NAME=${wf:user()}</env-var>
+            <file>${wf:appPath()}/population/r_familyinfo.sh#r_familyinfo.sh</file>
+        </shell>
+        <ok to="joinActions"/>
+        <error to="failed"/>
+    </action>
+    <action name="actionPopulaton_rpeople">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>r_people.sh</exec>
+            <argument>${server_addr}</argument>
+            <argument>${db_username}</argument>
+            <argument>${db_password}</argument>
+            <env-var>HADOOP_USER_NAME=${wf:user()}</env-var>
+            <file>${wf:appPath()}/population/r_people.sh#r_people.sh</file>
+        </shell>
+        <ok to="joinActions"/>
+        <error to="failed"/>
+    </action>
+
+    <action name="actionGrid_bpmdelay">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>bpm_delay_oracle.sh</exec>
+            <argument>${server_addr}</argument>
+            <argument>${db_username}</argument>
+            <argument>${db_password}</argument>
+            <env-var>HADOOP_USER_NAME=${wf:user()}</env-var>
+            <file>${wf:appPath()}/grid_callevent/bpm_delay_oracle.sh#bpm_delay_oracle.sh</file>
+        </shell>
+        <ok to="joinActions"/>
+        <error to="failed"/>
+    </action>
+
+    <action name="actionGrid_bpmtaskopinion">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>bpm_task_opinion.sh</exec>
+            <argument>${server_addr}</argument>
+            <argument>${db_username}</argument>
+            <argument>${db_password}</argument>
+            <env-var>HADOOP_USER_NAME=${wf:user()}</env-var>
+            <file>${wf:appPath()}/grid_callevent/bpm_task_opinion.sh#bpm_task_opinion.sh</file>
+        </shell>
+        <ok to="actionGrid_bpmtaskopinion_his"/>
+        <error to="failed"/>
+    </action>
+    <action name="actionGrid_bpmtaskopinion_his">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>bpm_task_opinion_oracle_his.sh</exec>
+            <argument>${server_addr}</argument>
+            <argument>${db_username}</argument>
+            <argument>${db_password}</argument>
+            <env-var>HADOOP_USER_NAME=${wf:user()}</env-var>
+            <file>${wf:appPath()}/grid_callevent/bpm_task_opinion_oracle_his.sh#bpm_task_opinion_oracle_his.sh</file>
+        </shell>
+        <ok to="joinActions"/>
+        <error to="failed"/>
+    </action>
+
+    <action name="actionGrid_callevent">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>call_event_oracle.sh</exec>
+            <argument>${server_addr}</argument>
+            <argument>${db_username}</argument>
+            <argument>${db_password}</argument>
+            <env-var>HADOOP_USER_NAME=${wf:user()}</env-var>
+            <file>${wf:appPath()}/grid_callevent/call_event_oracle.sh#call_event_oracle.sh</file>
+        </shell>
+        <ok to="actionGrid_callevent_his"/>
+        <error to="failed"/>
+    </action>
+    <action name="actionGrid_callevent_his">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>call_event_oracle_his.sh</exec>
+            <argument>${server_addr}</argument>
+            <argument>${db_username}</argument>
+            <argument>${db_password}</argument>
+            <env-var>HADOOP_USER_NAME=${wf:user()}</env-var>
+            <file>${wf:appPath()}/grid_callevent/call_event_oracle_his.sh#call_event_oracle_his.sh</file>
+        </shell>
+        <ok to="joinActions"/>
+        <error to="failed"/>
+    </action>
+    <action name="actionGrid_dispute">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>dispute_report_oracle.sh</exec>
+            <argument>${server_addr}</argument>
+            <argument>${db_username}</argument>
+            <argument>${db_password}</argument>
+            <env-var>HADOOP_USER_NAME=${wf:user()}</env-var>
+            <file>${wf:appPath()}/grid_callevent/dispute_report_oracle.sh#dispute_report_oracle.sh</file>
+        </shell>
+        <ok to="actionGrid_dispute_his"/>
+        <error to="failed"/>
+    </action>
+    <action name="actionGrid_dispute_his">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>dispute_report_oracle_his.sh</exec>
+            <argument>${server_addr}</argument>
+            <argument>${db_username}</argument>
+            <argument>${db_password}</argument>
+            <env-var>HADOOP_USER_NAME=${wf:user()}</env-var>
+            <file>${wf:appPath()}/grid_callevent/dispute_report_oracle_his.sh#dispute_report_oracle_his.sh</file>
+        </shell>
+        <ok to="joinActions"/>
+        <error to="failed"/>
+    </action>
+    <action name="actionFound_sysorg">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>sys_org.sh</exec>
+            <argument>${server_addr}</argument>
+            <argument>${db_username}</argument>
+            <argument>${db_password}</argument>
+            <env-var>HADOOP_USER_NAME=${wf:user()}</env-var>
+            <file>${wf:appPath()}/foundation/sys_org.sh#sys_org.sh</file>
+        </shell>
+        <ok to="joinActions"/>
+        <error to="failed"/>
+    </action>
+    <action name="actionFound_sysuser">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>sys_user.sh</exec>
+            <argument>${server_addr}</argument>
+            <argument>${db_username}</argument>
+            <argument>${db_password}</argument>
+            <env-var>HADOOP_USER_NAME=${wf:user()}</env-var>
+            <file>${wf:appPath()}/foundation/sys_user.sh#sys_user.sh</file>
+        </shell>
+        <ok to="joinActions"/>
+        <error to="failed"/>
+    </action>
+    <action name="actionFound_sysuserorg">
+        <shell xmlns="uri:oozie:shell-action:0.2">
+            <job-tracker>${jobTracker}</job-tracker>
+            <name-node>${nameNode}</name-node>
+            <exec>sys_user_org.sh</exec>
+            <argument>${server_addr}</argument>
+            <argument>${db_username}</argument>
+            <argument>${db_password}</argument>
+            <env-var>HADOOP_USER_NAME=${wf:user()}</env-var>
+            <file>${wf:appPath()}/foundation/sys_user_org.sh#sys_user_org.sh</file>
+        </shell>
+        <ok to="joinActions"/>
+        <error to="failed"/>
+    </action>
+
+    <join name="joinActions" to="success"/>
+    <kill name="failed">
+        <message>Sadan3 import etl run error: [${wf:errorMessage(wf:lastErrorNode())}]</message>
+    </kill>
+    <end name="success"/>
+
+</workflow-app>

@@ -1,0 +1,34 @@
+***oozie_workflow3模块，主要应用于调度，具体的R分析代码见 ../RModules/模块***
+
+该模块应用于 sadan3.0 平台
+    利用oozie对数据导入（data-import-scripts）、数据R模块分析（RModules）进行调度
+    data-import-scripts
+        利用sqoop实现数据从oracle库导入到Hbase（sadan3空间）中，映射到Hive数据仓库（sadan3）中。
+        其中，oracle数据库地址
+        jdbc:oracle:thin:@//db.dm.bionta.com:1521/social
+        db_username=dongliang
+        db_password=123456
+    ETL-scripts
+        保留
+        该模块的作用，数据仓库的建设。针对不同的主题，生成所需要的表。
+    RModules
+        数据分析模块
+
+        population模块：
+            人口模块，具体需求、文档见:https://fs.dm.bionta.com/svn/sadan/3.0
+            workflow.xml
+                oozie workflow 配置
+            runR.sh
+                通过shell运行R脚本的代码
+            population.tar.gz
+                对应../RModules中的R 原码。可通过解压查看具体的目录结构。
+                包括../RModules中populaiton文件夹、shared_data、shared_lib、config.json文件
+            oozie-run.sh
+                提交oozie的shell脚本
+            job.properties
+                oozie 调度所需的配置文件
+            coordinator.xml
+                coordinator的相关配置
+        global模块：
+            类似于 population模块
+            预处理模块，包括边界的生成；levelset的生成等。
